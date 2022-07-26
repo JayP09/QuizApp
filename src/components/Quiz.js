@@ -1,33 +1,53 @@
 import React,{useContext, useState} from "react"
-import { questions } from "../helpers/Questions"
+import { Questions } from "../helpers/Questions"
 import GameContext from "../helpers/Context"
 
 const Quiz = () => {
     const [currentQuestion , setCurrentQuestion] = useState(0)
     const [optionChosen, setOptionChosen] = useState("")
 
-    const {score, setScore} = useContext(GameContext)
+    const {setScore, setGameState} = useContext(GameContext)
 
     const nextQuestion = () => {
-        if(questions[currentQuestion].answer === optionChosen) {
+        if(Questions[currentQuestion].answer === optionChosen) {
             setScore((oldValue) => oldValue + 1)
+        } else if(optionChosen === "") {
+            return alert('Select Answer')
         }
         setCurrentQuestion((oldValue) => oldValue + 1)
+        setOptionChosen("")
+    }
+
+    const finishQuiz = () => {
+        if(Questions[currentQuestion].answer === optionChosen) {
+            setScore((oldValue) => oldValue + 1)
+        } else if(optionChosen === "") {
+            return alert('Select Answer')
+        }
+        setGameState("finished")
+        setOptionChosen("")
     }
 
     return (
-        <div className="flex flex-col justify-center items-center text-white w-[30rem] h-[30rem] p-4 rounded-xl bg-[#46B2E0] text-center">
-            <h1 className="my-6 text-2xl">{questions[currentQuestion].questionText}</h1>
+        <div className="flex flex-col justify-center items-center text-white w-[35rem] h-[35rem] p-4 rounded-xl bg-[#46B2E0] text-center">
+            <h1 className="my-6 text-2xl">{Questions[currentQuestion].questionText}</h1>
             <div>
-                {questions[currentQuestion].options.map((option) => (
+                {Questions[currentQuestion].options.map((option) => (
                     <div className={`p-4 m-2 border-none rounded-xl font-base outline-none w-[300px]  ${optionChosen === option ? "bg-[#1FAA59] text-white":"bg-white text-black"}`}
                         onClick={() => setOptionChosen(option)}
                     >{option}</div>
                 ))}
             </div>
-            <button className="cursor-pointer w-[330px] p-4 m-2 border-none rounded-xl font-base outline-none bg-[#27B74E]"
-                onClick={nextQuestion}
-            >Next Question</button>
+            {currentQuestion === Questions.length - 1 ? (
+                <button className="cursor-pointer w-[330px] p-4 m-2 border-none rounded-xl font-base outline-none bg-[#27B74E] text-white font-bold"
+                    onClick={finishQuiz}
+                >Finish Quiz</button>
+            ):(
+                <button className="cursor-pointer w-[330px] p-4 m-2 border-none rounded-xl font-base outline-none bg-[#27B74E] text-white font-bold"
+                    onClick={nextQuestion}
+                >Next Question</button>
+            )}
+           
         </div>
     )
 }
